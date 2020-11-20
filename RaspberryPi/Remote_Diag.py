@@ -26,8 +26,9 @@ class MutipleThreading(threading.Thread):
 def CAN_tx_service(tx_bus):
         bus = tx_bus
         while True:
-            # data = [0x02,0x10,0x03,0x00,0x00,0x00,0x00,0x00]
-            msg = can.Message(is_extended_id=False, arbitration_id=0x733,data=TCP_RX_Buff)
+            data = [0x02,0x10,0x03,0x00,0x00,0x00,0x00,0x00]
+            msg = can.Message(is_extended_id=False, arbitration_id=0x793,data=data)
+            # msg = can.Message(is_extended_id=False, arbitration_id=0x793,data=TCP_RX_Buff)
             bus.send(msg)
             sleep(0.5)
 
@@ -39,13 +40,14 @@ def CAN_rx_service(rx_bus):
         message = bus.recv(1)  # Timeout in seconds.
         if message is None:
             print('Timeout occurred, no message.')
-        elif(message.arbitration_id != 0x73B):
+        elif(message.arbitration_id == 0x79B):
             #Todo: parse message and then send to TCP
-            print(np.array(message.data))
+            # print(np.array(message.data))
+            print(message)
             lock_TCP_TX.acquire()
             TCP_TX_Buff.append(message)
             lock_TCP_TX.release()
-        sleep(1)
+        # sleep(1)
 
 def TCP_rx_service(TCP):
     global TCP_RX_Buff
